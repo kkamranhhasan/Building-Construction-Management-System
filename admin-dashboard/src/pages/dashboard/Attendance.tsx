@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { API } from '../../config/api';
 
 interface SiteWithWorkers {
@@ -34,7 +34,6 @@ export default function AttendanceCapture() {
   const [cameraError, setCameraError] = useState('');
   const [toast, setToast] = useState({ show: false, type: '', text: '' });
   const [attendances, setAttendances] = useState<AttendanceRecord[]>([]);
-  const [attLoading, setAttLoading] = useState(false);
   const [viewPhoto, setViewPhoto] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
