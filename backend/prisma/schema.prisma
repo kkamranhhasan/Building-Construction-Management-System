@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  name      String
+  role      String   // OWNER, MANAGER, SITE_MANAGER, WORKER
+  hourlyRate Float?  // For workers
+  isApproved Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  assignedSites   Site[] @relation("SiteWorkers")
+  managedSites    Site[] @relation("SiteManagers")
+  
+  attendanceRecords Attendance[] @relation("WorkerAttendance")
+  verifiedAttendances Attendance[] @relation("VerifiedAttendances")
+
+  salaryReports SalaryReport[]
+}
+
+model Site {
+  id          String   @id @default(uuid())
+  name        String
+  location    String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workers     User[] @relation("SiteWorkers")
+  managers    User[] @relation("SiteManagers")
+
+  attendanceRecords Attendance[]
+}
+
+model Attendance {
+  id            String   @id @default(uuid())
+  date          DateTime // Date of the record
+  checkInTime   DateTime
+  checkOutTime  DateTime?
+  status        String   @default("PRESENT") // PRESENT, ABSENT, LATE, HALF_DAY
+  imageProofUrl String?
+  locationLat   Float?
+  locationLng   Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  workerId      String
+  worker        User     @relation("WorkerAttendance", fields: [workerId], references: [id])
+
+  siteId        String
+  site          Site     @relation(fields: [siteId], references: [id])
+
+  verifiedById  String?
+  verifiedBy    User?    @relation("VerifiedAttendances", fields: [verifiedById], references: [id])
+}
+
+model SalaryReport {
+  id         String   @id @default(uuid())
+  month      Int
+  year       Int
+  totalHours Float
+  amountPaid Float
+  status     String   @default("PENDING") // PENDING, PAID
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  workerId   String
+  worker     User     @relation(fields: [workerId], references: [id])
+}
+
+// ==========================================
+// CMS MODELS
+// ==========================================
+
+model CompanyInfo {
+  id          String   @id @default(uuid())
+  name        String   @default("S Islam ERP")
+  heroTitle   String   @default("Construct The Future")
+  heroSub     String   @default("Manage With Precision.")
+  aboutText   String?
+  mission     String?
+  vision      String?
+  phone       String?
+  email       String?
+  address     String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String?
+  status      String   @default("RUNNING") // RUNNING, COMPLETED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}

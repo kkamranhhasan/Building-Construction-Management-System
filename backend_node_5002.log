@@ -1,0 +1,4 @@
+◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+Server is running on port 5002
+[DELETE] Attempting to delete site: ac95aba6-b0a0-4500-85e4-130bb57d2111
+[DELETE] Success. Site ac95aba6-b0a0-4500-85e4-130bb57d2111 deleted.
