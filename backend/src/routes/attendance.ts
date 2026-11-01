@@ -4,8 +4,8 @@ import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.post('/checkin', authMiddleware(['SITE_MANAGER']), checkIn);
-router.post('/checkout', authMiddleware(['SITE_MANAGER']), checkOut);
+router.post('/checkin', authMiddleware(['OWNER', 'MANAGER', 'SITE_MANAGER']), checkIn);
+router.post('/checkout', authMiddleware(['OWNER', 'MANAGER', 'SITE_MANAGER']), checkOut);
 router.get('/', authMiddleware(['OWNER', 'MANAGER', 'SITE_MANAGER', 'WORKER']), getAttendances);
 
 export default router;

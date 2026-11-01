@@ -24,6 +24,27 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/salary', salaryRoutes);
 app.use('/api/cms', cmsRoutes);
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Construction Management API is running successfully!',
+    status: 'online',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      sites: '/api/sites',
+      attendance: '/api/attendance',
+      salary: '/api/salary',
+      cms: '/api/cms',
+    },
+    links: {
+      adminDashboard: 'http://localhost:5173',
+      webFrontend: 'http://localhost:3000',
+    },
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });

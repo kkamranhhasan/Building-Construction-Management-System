@@ -22,8 +22,8 @@ export const getSites = async (req: AuthRequest, res: Response): Promise<void> =
       const sites = await prisma.site.findMany({
         where: { workers: { some: { id: user.id } } },
         include: {
-          managers: { select: { id: true, name: true, username: true } },
-          workers: { select: { id: true, name: true, username: true } },
+          managers: { select: { id: true, name: true, username: true, idNumber: true, phone: true, avatarUrl: true, trade: true } },
+          workers: { select: { id: true, name: true, username: true, idNumber: true, phone: true, avatarUrl: true, trade: true, faceDescriptor: true, isFaceEnrolled: true, hourlyRate: true } },
         },
       });
       res.json(sites);
@@ -33,8 +33,8 @@ export const getSites = async (req: AuthRequest, res: Response): Promise<void> =
     // OWNER, MANAGER, SITE_MANAGER
     const allSites = await prisma.site.findMany({
       include: {
-        managers: { select: { id: true, name: true, username: true } },
-        workers: { select: { id: true, name: true, username: true } },
+        managers: { select: { id: true, name: true, username: true, idNumber: true, phone: true, avatarUrl: true, trade: true } },
+        workers: { select: { id: true, name: true, username: true, idNumber: true, phone: true, avatarUrl: true, trade: true, faceDescriptor: true, isFaceEnrolled: true, hourlyRate: true } },
       },
     });
 
@@ -47,7 +47,7 @@ export const getSites = async (req: AuthRequest, res: Response): Promise<void> =
           const matchId = m.id && user.id && m.id.toLowerCase() === user.id.toLowerCase();
           const matchUsername = m.username && user.username && m.username.toLowerCase() === user.username.toLowerCase();
           // Fallback to name if other fields are shaky
-          const matchName = m.name && user.id && m.name.toLowerCase() === user.id.toLowerCase(); // Sometimes ID holds the name in legacy sessions
+          const matchName = m.name && user.id && m.name.toLowerCase() === user.id.toLowerCase();
           
           return matchId || matchUsername || matchName;
         });
@@ -109,12 +109,18 @@ export const getSiteWorkers = async (req: AuthRequest, res: Response): Promise<v
             id: true,
             name: true,
             username: true,
+            idNumber: true,
+            phone: true,
+            avatarUrl: true,
+            trade: true,
+            faceDescriptor: true,
+            isFaceEnrolled: true,
             hourlyRate: true,
             isApproved: true,
             createdAt: true,
           },
         },
-        managers: { select: { id: true, name: true, username: true } },
+        managers: { select: { id: true, name: true, username: true, idNumber: true, phone: true, avatarUrl: true, trade: true } },
       },
     });
 
@@ -150,11 +156,20 @@ export const getMyAssignedWorkers = async (req: AuthRequest, res: Response): Pro
         id: true,
         name: true,
         location: true,
+        latitude: true,
+        longitude: true,
+        radiusMeters: true,
         workers: {
           select: {
             id: true,
             name: true,
             username: true,
+            idNumber: true,
+            phone: true,
+            avatarUrl: true,
+            trade: true,
+            faceDescriptor: true,
+            isFaceEnrolled: true,
             hourlyRate: true,
             isApproved: true,
             createdAt: true,
@@ -172,9 +187,16 @@ export const getMyAssignedWorkers = async (req: AuthRequest, res: Response): Pro
 
 export const createSite = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, location, description } = req.body;
+    const { name, location, description, latitude, longitude, radiusMeters } = req.body;
     const site = await prisma.site.create({
-      data: { name, location, description },
+      data: { 
+        name, 
+        location, 
+        description,
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
+        radiusMeters: radiusMeters ? parseFloat(radiusMeters) : 300,
+      },
     });
     res.status(201).json(site);
   } catch (error) {
@@ -287,7 +309,7 @@ export const removeUserFromSite = async (req: Request, res: Response): Promise<v
 export const updateSite = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = first(req.params.id);
-    const { name, location, description } = req.body;
+    const { name, location, description, latitude, longitude, radiusMeters } = req.body;
 
     if (!id) {
       res.status(400).json({ error: 'Missing site id' });
@@ -296,7 +318,14 @@ export const updateSite = async (req: Request, res: Response): Promise<void> => 
 
     const site = await prisma.site.update({
       where: { id },
-      data: { name, location, description },
+      data: { 
+        name, 
+        location, 
+        description,
+        latitude: latitude !== undefined ? (latitude ? parseFloat(latitude) : null) : undefined,
+        longitude: longitude !== undefined ? (longitude ? parseFloat(longitude) : null) : undefined,
+        radiusMeters: radiusMeters !== undefined ? (radiusMeters ? parseFloat(radiusMeters) : 300) : undefined,
+      },
     });
 
     res.json(site);

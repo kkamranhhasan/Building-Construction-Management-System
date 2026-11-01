@@ -60,19 +60,28 @@ export const calculateSalary = async (req: AuthRequest, res: Response): Promise<
   }
 };
 
-export const getSalaryReports = async (req: Request, res: Response): Promise<void> => {
+export const getSalaryReports = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { workerId } = req.query;
+    const user = req.user;
+    const workerId = (req.query.workerId || req.params.workerId) as string | undefined;
+
+    let targetWorkerId = workerId;
+    if (user?.role === 'WORKER') {
+      targetWorkerId = user.id;
+    }
 
     const reports = await prisma.salaryReport.findMany({
-      where: workerId ? { workerId: String(workerId) } : undefined,
+      where: targetWorkerId ? { workerId: String(targetWorkerId) } : undefined,
       include: {
-        worker: { select: { id: true, name: true, hourlyRate: true } },
+        worker: { select: { id: true, name: true, username: true, idNumber: true, phone: true, avatarUrl: true, hourlyRate: true } },
       },
+      orderBy: { createdAt: 'desc' },
     });
 
     res.json(reports);
   } catch (error) {
+    console.error('getSalaryReports error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+

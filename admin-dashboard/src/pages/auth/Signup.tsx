@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { API } from '../../config/api';
+import { User, Lock, ArrowRight, AlertCircle, CheckCircle2, Shield } from 'lucide-react';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -44,102 +45,120 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden p-6">
       {/* Decorative Elements */}
-      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-[-15%] right-[-10%] w-[50%] h-[50%] bg-primary/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[-15%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="w-full max-w-md bg-white border border-slate-200 p-10 rounded-3xl shadow-2xl relative z-10">
+      <div className="w-full max-w-md bg-card/95 backdrop-blur-2xl border border-border p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-2">
-            S Islam ERP
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-foreground text-2xl mx-auto shadow-lg shadow-primary/25 mb-4">
+            🏗️
+          </div>
+          <h1 className="text-3xl font-black bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent tracking-tight">
+            Join S Islam ERP
           </h1>
-          <p className="text-slate-500 font-medium">Create your account</p>
+          <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mt-1">Create Personnel Account</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-bold text-center animate-in slide-in-from-top-2">
-            {error}
+          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 rounded-2xl text-xs font-bold flex items-center gap-2 animate-in slide-in-from-top-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
         {success ? (
-          <div className="mb-6 p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center animate-in zoom-in">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm">
-              ✓
+          <div className="mb-6 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center animate-in zoom-in">
+            <div className="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h3 className="text-xl font-bold text-emerald-700 mb-2">Registration Successful!</h3>
-            <p className="text-emerald-600 font-medium text-sm">
-              Your account is pending approval by a manager. You will be redirected to the login page shortly.
+            <h3 className="text-lg font-black text-foreground mb-1">Registration Submitted!</h3>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              Your account has been created and is pending approval by management. Redirecting to login...
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSignup} className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
+          <form onSubmit={handleSignup} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-primary" />
+                <span>Full Name</span>
+              </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-slate-50 border border-slate-200 text-slate-900 px-5 py-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all font-medium"
-                placeholder="John Doe"
+                className="bg-input border border-border text-foreground px-4 py-3.5 rounded-2xl focus:border-primary outline-none transition-all text-sm font-semibold"
+                placeholder="e.g. Zahid Hasan"
                 required
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Username</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-primary" />
+                <span>Username</span>
+              </label>
               <input
                 type="text"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                className="bg-slate-50 border border-slate-200 text-slate-900 px-5 py-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all font-medium"
-                placeholder="Choose a username"
+                className="bg-input border border-border text-foreground px-4 py-3.5 rounded-2xl focus:border-primary outline-none transition-all text-sm font-semibold"
+                placeholder="e.g. zahid_site"
                 required
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Password</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-primary" />
+                <span>Password</span>
+              </label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="bg-slate-50 border border-slate-200 text-slate-900 px-5 py-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all font-medium"
+                className="bg-input border border-border text-foreground px-4 py-3.5 rounded-2xl focus:border-primary outline-none transition-all text-sm font-semibold"
                 placeholder="••••••••"
                 required
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Role</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-primary" />
+                <span>Account Role</span>
+              </label>
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="bg-slate-50 border border-slate-200 text-slate-900 px-5 py-3.5 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all font-medium appearance-none"
+                className="bg-input border border-border text-foreground px-4 py-3.5 rounded-2xl focus:border-primary outline-none transition-all text-sm font-semibold"
               >
-                <option value="WORKER">Worker</option>
-                <option value="SITE_MANAGER">Site Manager</option>
+                <option value="WORKER">Worker (Field Staff)</option>
+                <option value="SITE_MANAGER">Site Manager (Field Supervisor)</option>
               </select>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="mt-4 w-full bg-primary hover:bg-primary-hover text-white font-extrabold py-4 rounded-xl transition-all shadow-xl shadow-primary/30 disabled:opacity-70 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+              className="mt-4 w-full bg-primary hover:bg-primary/90 text-foreground font-black py-4 rounded-2xl transition-all shadow-xl shadow-primary/25 disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-sm"
             >
-              {loading ? 'Creating Account...' : 'Register'}
+              <span>{loading ? 'Submitting Registration...' : 'Create Account'}</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </form>
         )}
 
-        <div className="mt-8 text-center text-slate-500 font-medium">
+        <div className="mt-8 text-center text-muted-foreground text-xs font-medium border-t border-border pt-6">
           Already have an account?{' '}
-          <a href="/login" className="text-primary font-bold hover:underline">
-            Sign in
-          </a>
+          <Link to="/login" className="text-primary font-bold hover:underline">
+            Sign in here
+          </Link>
         </div>
       </div>
     </div>
   );
 }
+

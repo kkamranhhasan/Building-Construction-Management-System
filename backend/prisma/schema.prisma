@@ -3,114 +3,117 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  password  String
-  name      String
-  role      String   // OWNER, MANAGER, SITE_MANAGER, WORKER
-  hourlyRate Float?  // For workers
-  isApproved Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relationships
-  assignedSites   Site[] @relation("SiteWorkers")
-  managedSites    Site[] @relation("SiteManagers")
-  
-  attendanceRecords Attendance[] @relation("WorkerAttendance")
-  verifiedAttendances Attendance[] @relation("VerifiedAttendances")
-
-  salaryReports SalaryReport[]
-}
-
-model Site {
-  id          String   @id @default(uuid())
-  name        String
-  location    String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  workers     User[] @relation("SiteWorkers")
-  managers    User[] @relation("SiteManagers")
-
-  attendanceRecords Attendance[]
-}
-
 model Attendance {
-  id            String   @id @default(uuid())
-  date          DateTime // Date of the record
-  checkInTime   DateTime
-  checkOutTime  DateTime?
-  status        String   @default("PRESENT") // PRESENT, ABSENT, LATE, HALF_DAY
-  imageProofUrl String?
-  locationLat   Float?
-  locationLng   Float?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                                 String    @id
+  date                               DateTime
+  checkInTime                        DateTime
+  checkOutTime                       DateTime?
+  status                             String    @default("PRESENT")
+  imageProofUrl                      String?
+  locationLat                        Float?
+  locationLng                        Float?
+  createdAt                          DateTime  @default(now())
+  updatedAt                          DateTime
+  workerId                           String
+  siteId                             String
+  verifiedById                       String?
+  confidenceScore                    Float?
+  distanceMeters                     Float?
+  verificationMethod                 String?   @default("MANUAL_PHOTO")
+  checkOutImageProofUrl              String?
+  checkOutMethod                     String?
+  User_Attendance_verifiedByIdToUser User?     @relation("Attendance_verifiedByIdToUser", fields: [verifiedById], references: [id])
+  Site                               Site      @relation(fields: [siteId], references: [id])
+  User_Attendance_workerIdToUser     User      @relation("Attendance_workerIdToUser", fields: [workerId], references: [id])
+}
 
-  workerId      String
-  worker        User     @relation("WorkerAttendance", fields: [workerId], references: [id])
+model CompanyInfo {
+  id        String   @id
+  name      String   @default("S Islam ERP")
+  heroTitle String   @default("Construct The Future")
+  heroSub   String   @default("Manage With Precision.")
+  aboutText String?
+  mission   String?
+  vision    String?
+  phone     String?
+  email     String?
+  address   String?
+  updatedAt DateTime
+}
 
-  siteId        String
-  site          Site     @relation(fields: [siteId], references: [id])
+model ContactMessage {
+  id        String   @id
+  name      String
+  email     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
 
-  verifiedById  String?
-  verifiedBy    User?    @relation("VerifiedAttendances", fields: [verifiedById], references: [id])
+model Project {
+  id          String   @id
+  title       String
+  description String
+  imageUrl    String?
+  status      String   @default("RUNNING")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
 }
 
 model SalaryReport {
-  id         String   @id @default(uuid())
+  id         String   @id
   month      Int
   year       Int
   totalHours Float
   amountPaid Float
-  status     String   @default("PENDING") // PENDING, PAID
+  status     String   @default("PENDING")
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
+  updatedAt  DateTime
   workerId   String
-  worker     User     @relation(fields: [workerId], references: [id])
+  User       User     @relation(fields: [workerId], references: [id])
 }
 
-// ==========================================
-// CMS MODELS
-// ==========================================
-
-model CompanyInfo {
-  id          String   @id @default(uuid())
-  name        String   @default("S Islam ERP")
-  heroTitle   String   @default("Construct The Future")
-  heroSub     String   @default("Manage With Precision.")
-  aboutText   String?
-  mission     String?
-  vision      String?
-  phone       String?
-  email       String?
-  address     String?
-  updatedAt   DateTime @updatedAt
+model Site {
+  id                String       @id
+  name              String
+  location          String
+  description       String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime
+  latitude          Float?
+  longitude         Float?
+  radiusMeters      Float?       @default(300)
+  Attendance        Attendance[]
+  User_SiteManagers User[]       @relation("SiteManagers")
+  User_SiteWorkers  User[]       @relation("SiteWorkers")
 }
 
-model Project {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  imageUrl    String?
-  status      String   @default("RUNNING") // RUNNING, COMPLETED
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model ContactMessage {
-  id          String   @id @default(uuid())
-  name        String
-  email       String
-  message     String
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
+model User {
+  id                                       String         @id
+  username                                 String         @unique
+  password                                 String
+  name                                     String
+  idNumber                                 String?        @unique
+  phone                                    String?
+  avatarUrl                                String?
+  faceDescriptor                           String?
+  isFaceEnrolled                           Boolean        @default(false)
+  faceEnrolledAt                           DateTime?
+  role                                     String
+  hourlyRate                               Float?
+  isApproved                               Boolean        @default(false)
+  createdAt                                DateTime       @default(now())
+  updatedAt                                DateTime
+  trade                                    String?        @default("General Laborer")
+  resetOtp                                 String?
+  resetOtpExpires                          DateTime?
+  Attendance_Attendance_verifiedByIdToUser Attendance[]   @relation("Attendance_verifiedByIdToUser")
+  Attendance_Attendance_workerIdToUser     Attendance[]   @relation("Attendance_workerIdToUser")
+  SalaryReport                             SalaryReport[]
+  Site_SiteManagers                        Site[]         @relation("SiteManagers")
+  Site_SiteWorkers                         Site[]         @relation("SiteWorkers")
 }

@@ -7,6 +7,9 @@ export const API = {
   login: `${API_BASE}/api/auth/login`,
   signup: `${API_BASE}/api/auth/signup`,
   me: `${API_BASE}/api/auth/me`,
+  forgotPasswordOtp: `${API_BASE}/api/auth/forgot-password/request-otp`,
+  forgotPasswordVerify: `${API_BASE}/api/auth/forgot-password/verify-otp`,
+  forgotPasswordReset: `${API_BASE}/api/auth/forgot-password/reset`,
 
   // Sites
   sites: `${API_BASE}/api/sites`,
@@ -20,6 +23,7 @@ export const API = {
   users: `${API_BASE}/api/users`,
   user: (id: string) => `${API_BASE}/api/users/${id}`,
   approveUser: (id: string) => `${API_BASE}/api/users/${id}/approve`,
+  profile: `${API_BASE}/api/users/profile`,
 
   // Attendance
   checkin: `${API_BASE}/api/attendance/checkin`,
